@@ -1,0 +1,22 @@
+body {
+    background: lightblue;
+}
+
+#toolbox {
+    margin: 30px;
+    font-size: 1.2em;
+}
+
+#toolbox > div {
+    margin-top: 15px;
+}
+
+.county {
+    fill: #ebf0e4;
+    stroke: gray;
+    stroke-width: 0.1px;
+}
+
+.county:hover {
+    fill: lightgray;
+}
