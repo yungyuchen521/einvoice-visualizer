@@ -2,6 +2,11 @@ body {
     background: lightblue;
 }
 
+li.nav-item:has(a.nav-link[selected='true']) {
+    background-color: black;
+    color: white;
+}
+
 #toolbox-container {
     margin: 30px;
     font-size: 1.2em;
@@ -25,4 +30,8 @@ h1.svg-title {
 
 .county:hover {
     fill: lightgray;
+}
+
+.legend text {
+    font-size: 1.5em;
 }

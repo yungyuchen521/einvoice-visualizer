@@ -30,7 +30,7 @@ const MAP_SCALE = 8000;
 
 const CACHE = {};
 
-let COMPARE_BY = "";
+let COMPARE_BY = COMPARE_BY_IND;
 
 d3.json(TW_MAP_URL)
     .then((data) => {
@@ -79,14 +79,45 @@ function initPlot() {
         .on("click", handleRegionClick);
 
     g.select("path[county-id='W']").attr("transform", "translate(120)");
-};
+}
 
 const refresh = () => {
-    d3.selectAll("svg").each(refreshPlot);
+    const data_list = [];
+    const max_val_list = [];
+
+    const svg_list = document.querySelectorAll("svg");
+
+    svg_list.forEach((svg) => {
+        const [data, max_value] = getData(svg);
+        data_list.push(data);
+        max_val_list.push(max_value)
+    });
+
+    const selected_cnty_ids = getSelectedCountyIds();
+    svg_list.forEach((svg, i) => {
+        svg = d3.select(svg);
+        svg.select("g.legend").remove();
+
+        const max_val = COMPARE_BY == COMPARE_BY_CRIT ? max_val_list[i] : d3.max(max_val_list)
+        const colorScale = d3
+            .scaleSequential()
+            .domain([-max_val * 0.2, max_val])
+            .interpolator(d3.interpolateReds);
+
+        svg.selectAll("path.county").each(function () {
+            const target = d3.select(this);
+            const id = target.attr("county-id");
+            if (selected_cnty_ids.includes(id)) return;
+
+            target.style("fill", colorScale(data_list[i][id]));
+        });
+
+        if (i == 0 || COMPARE_BY == COMPARE_BY_CRIT) addLegend(svg, 0, max_val, colorScale);
+    });
 };
 
-function refreshPlot() {
-    const svg = d3.select(this);
+const getData = (svg) => {
+    svg = d3.select(svg);
     svg.select("g.legend").remove();
 
     const key = svg.attr("key");
@@ -108,12 +139,9 @@ function refreshPlot() {
             selected_industry_ids,
             crit
         );
+
         if (!records) records = tmp;
-        else {
-            Object.keys(tmp).forEach((k) => {
-                records[k] += tmp[k];
-            });
-        }
+        else Object.keys(tmp).forEach((k) => (records[k] += tmp[k]));
     });
 
     let max_val = 0;
@@ -122,21 +150,8 @@ function refreshPlot() {
         max_val = Math.max(max_val, records[id]);
     });
 
-    const colorScale = d3
-        .scaleSequential()
-        .domain([-max_val * 0.2, max_val])
-        .interpolator(d3.interpolateReds);
-
-    svg.selectAll("path.county").each(function () {
-        const target = d3.select(this);
-        const id = target.attr("county-id");
-        if (selected_cnty_ids.includes(id)) return;
-
-        target.style("fill", colorScale(records[id]));
-    });
-
-    addLegend(svg, 0, max_val, colorScale);
-}
+    return [records, max_val];
+};
 
 const addLegend = (svg, min_val, max_val, colorScale) => {
     const width = svg.attr("width");

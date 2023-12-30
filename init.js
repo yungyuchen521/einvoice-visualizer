@@ -38,6 +38,13 @@ function updateCompareBy() {
             break;
     }
 
+    console.log(COMPARE_BY);
+
+    d3.selectAll("a.nav-link").each(function () {
+        const a = d3.select(this);
+        a.attr("selected", a.attr("val") == COMPARE_BY ? "true" : "false");
+    });
+
     initSvg(COMPARE_BY, values, titles);
     d3.selectAll("svg").each(initPlot);
 }
@@ -70,4 +77,3 @@ const initSvg = (key, values, titles) => {
 };
 
 initNavItems();
-initSvg(COMPARE_BY_IND, ["47", "55", "56"], ["retail", "hotel", "catering"]);
