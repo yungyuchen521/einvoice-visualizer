@@ -2,13 +2,19 @@ body {
     background: lightblue;
 }
 
-#toolbox {
+#toolbox-container {
     margin: 30px;
     font-size: 1.2em;
 }
 
-#toolbox > div {
-    margin-top: 15px;
+#btn-container {
+    margin-top: 50px;
+    margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+h1.svg-title {
+    margin: 20px;
 }
 
 .county {

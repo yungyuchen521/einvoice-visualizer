@@ -13,67 +13,83 @@
     </head>
 
     <body>
-        <div class="row">
-            <div class="col-sm-2">
-                <div id="toolbox">
-                    <div>
-                        <label for="perspective">Perspective</label>
-                        <select name="perspective" id="perspective">
-                            <option value="business">Business</option>
-                            <option value="consumption">Consumption</option>
-                        </select>
-                    </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                    <!-- <div>
-                        <label for="target">Target County</label>
-                        <select name="target" id="target">
-                            <option value="C">Keelung</option>
-                            <option value="A">Taipei</option>
-                            <option value="F">New Taipei</option>
-                            <option value="H">Taoyuan</option>
-                            <option value="J">Hsinchu</option>
-                            <option value="K">Miaoli</option>
-                            <option value="B">Taichung</option>
-                            <option value="M">Nantou</option>
-                            <option value="N">Changhua</option>
-                            <option value="P">Yunlin</option>
-                            <option value="Q">Chiayi</option>
-                            <option value="D">Tainan</option>
-                            <option value="E">Kaohsiung</option>
-                            <option value="T">Pingtung</option>
-                            <option value="V">Taitung</option>
-                            <option value="U">Hualien</option>
-                            <option value="G">Yilan</option>
-                            <option value="X">Penghu</option>
-                            <option value="W">Kinmen</option>
-                        </select>
-                    </div> -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto"></ul>
+            </div>
+        </nav>
 
-                    <div>
-                        <label for="criterion">Criterion</label>
-                        <select name="criterion" id="criterion">
-                            <option value="amount">Amount</option>
-                            <option value="count">Count</option>
-                            <option value="average">Average</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="start-year">Year</label>
-                        <input id="start-year" type="number" min="2020" max="2023" value="2020" />~
-                        <input id="end-year" type="number" min="2020" max="2023" value="2023" />
-                    </div>
-
-                    <div>
-                        <button onclick="refreshPlot()">Refresh</button>
-                        <button onclick="clearPlot()">Clear</button>
-                    </div>
+        <div class="row" id="toolbox-container">
+            <div class="col-sm-3">
+                <div>
+                    <label for="perspective">Perspective</label>
+                    <select name="perspective" id="perspective">
+                        <option value="business">Business</option>
+                        <option value="consumption">Consumption</option>
+                    </select>
                 </div>
             </div>
-            <div class="col-sm-9"><svg width="900" height="1200"></svg></div>
+
+            <div class="col-sm-3">
+                <div>
+                    <label for="criterion">Criterion</label>
+                    <select name="criterion" id="criterion">
+                        <option value="amount">Amount</option>
+                        <option value="count">Count</option>
+                        <option value="average">Average</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div>
+                    <label for="start-year">Year</label>
+                    <input id="start-year" type="number" min="2020" max="2023" value="2020" />~
+                    <input id="end-year" type="number" min="2020" max="2023" value="2023" />
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div>
+                    <input type="checkbox" name="retail" id="retail" code="47" checked />
+                    <label for="retail">Retail</label>
+
+                    <input type="checkbox" name="hotel" id="hotel" code="55" checked />
+                    <label for="hotel">Hotel</label>
+
+                    <input type="checkbox" name="catering" id="catering" code="56" checked />
+                    <label for="catering">Catering</label>
+                </div>
+            </div>
         </div>
 
+        <div class="row" id="svg-container"></div>
+
+        <div class="row" id="btn-container">
+            <div class="col-sm-5"></div>
+            <div class="col-sm-1">
+                <button onclick="refresh()">Refresh</button>
+            </div>
+            <div class="col-sm-1">
+                <button onclick="clearPlot()">Clear</button>
+            </div>
+        </div>
+
+        <script src="define.js"></script>
         <script src="index.js"></script>
+        <script src="init.js"></script>
         <script src="utils.js"></script>
         <script
             src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

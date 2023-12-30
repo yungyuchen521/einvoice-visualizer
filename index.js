@@ -1,4 +1,3 @@
-const SVG = d3.select("svg");
 const COUNTY_ID_TABLE = [
     "",
     "G", // 宜蘭
@@ -25,38 +24,18 @@ const COUNTY_ID_TABLE = [
     // Z: 連江
 ];
 
-const TW_MAP_URL =
-    "https://raw.githubusercontent.com/yungyuchen521/einvoice-visualizer/main/tw_topo.json";
-
-const DATA_URL =
-    "https://raw.githubusercontent.com/yungyuchen521/einvoice-visualizer/main/data.csv";
-
 const CENTER_LONG = 123;
 const CENTER_LAT = 24;
-const MAP_SCALE = 10000;
-
-const COLOR_SELECTED = "black";
+const MAP_SCALE = 8000;
 
 const CACHE = {};
-const BUSINESS_KEY = "business";
-const CONSUMPTION_KEY = "consumption";
+
+let COMPARE_BY = "";
 
 d3.json(TW_MAP_URL)
     .then((data) => {
-        const projectmethod = d3.geoMercator().center([CENTER_LONG, CENTER_LAT]).scale(MAP_SCALE);
-        const pathGenerator = d3.geoPath().projection(projectmethod);
-        const geometries = topojson.feature(data, data.objects["COUNTY_MOI_1090820"]);
-
-        const g = SVG.append("g").attr("transform", "translate(400,100)");
-        g.selectAll("path")
-            .data(geometries.features)
-            .enter()
-            .append("path")
-            .attr("d", pathGenerator)
-            .attr("class", "county")
-            .attr("selected", false)
-            .attr("county-id", (_, i) => COUNTY_ID_TABLE[i])
-            .on("click", handleRegionClick);
+        CACHE[CACHE_KEY_TOPO] = data;
+        d3.selectAll("svg").each(initPlot);
     })
     .then(() => {
         d3.csv(DATA_URL).then((data) => {
@@ -71,28 +50,64 @@ d3.json(TW_MAP_URL)
                 if (!(b_id in business_dict)) business_dict[b_id] = new County(b_id);
                 if (!(c_id in consumption_dict)) consumption_dict[c_id] = new County(c_id);
 
-                business_dict[b_id].addRecord(c_id, +d.year, +d.amount, +d.count);
-                consumption_dict[c_id].addRecord(b_id, +d.year, +d.amount, +d.count);
+                business_dict[b_id].addRecord(c_id, +d.year, d.industry_id, +d.amount, +d.count);
+                consumption_dict[c_id].addRecord(b_id, +d.year, d.industry_id, +d.amount, +d.count);
             });
 
-            CACHE[BUSINESS_KEY] = business_dict;
-            CACHE[CONSUMPTION_KEY] = consumption_dict;
+            CACHE[CACHE_KEY_BUSINESS] = business_dict;
+            CACHE[CACHE_KEY_CONSUMPTION] = consumption_dict;
         });
     });
 
-const refreshPlot = () => {
-    const perspective = document.getElementById("perspective").value;
-    const crit = document.getElementById("criterion").value;
-    const start_year = +document.getElementById("start-year").value;
-    const end_year = +document.getElementById("end-year").value;
+function initPlot() {
+    const data = CACHE[CACHE_KEY_TOPO];
+    const projectmethod = d3.geoMercator().center([CENTER_LONG, CENTER_LAT]).scale(MAP_SCALE);
+    const pathGenerator = d3.geoPath().projection(projectmethod);
+    const geometries = topojson.feature(data, data.objects["COUNTY_MOI_1090820"]);
 
-    const selected_cnty_ids = Array.from(
-        document.querySelectorAll("path.county[selected='true']")
-    ).map((ele) => ele.getAttribute("county-id"));
+    const svg = d3.select(this);
+    svg.html("");
+    const g = svg.append("g").attr("transform", "translate(100, 50)");
+    g.selectAll("path")
+        .data(geometries.features)
+        .enter()
+        .append("path")
+        .attr("d", pathGenerator)
+        .attr("class", "county")
+        .attr("selected", false)
+        .attr("county-id", (_, i) => COUNTY_ID_TABLE[i])
+        .on("click", handleRegionClick);
+
+    g.select("path[county-id='W']").attr("transform", "translate(120)");
+};
+
+const refresh = () => {
+    d3.selectAll("svg").each(refreshPlot);
+};
+
+function refreshPlot() {
+    const svg = d3.select(this);
+    svg.select("g.legend").remove();
+
+    const key = svg.attr("key");
+    const val = svg.attr("val");
+
+    const start_year = key == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
+    const end_year = key == COMPARE_BY_YEAR ? +val : +document.getElementById("end-year").value;
+    const crit = key == COMPARE_BY_CRIT ? val : document.getElementById("criterion").value;
+    const selected_industry_ids = key == COMPARE_BY_IND ? [val] : getSelectedIndustryIds();
+
+    const perspective = document.getElementById("perspective").value;
+    const selected_cnty_ids = getSelectedCountyIds();
 
     let records = null;
     selected_cnty_ids.forEach((id) => {
-        const tmp = CACHE[perspective][id].getRecords(start_year, end_year, crit);
+        const tmp = CACHE[perspective][id].getRecords(
+            start_year,
+            end_year,
+            selected_industry_ids,
+            crit
+        );
         if (!records) records = tmp;
         else {
             Object.keys(tmp).forEach((k) => {
@@ -112,14 +127,14 @@ const refreshPlot = () => {
         .domain([-max_val * 0.2, max_val])
         .interpolator(d3.interpolateReds);
 
-    d3.selectAll("path.county").each(function () {
+    svg.selectAll("path.county").each(function () {
         const target = d3.select(this);
         const id = target.attr("county-id");
         if (selected_cnty_ids.includes(id)) return;
 
         target.style("fill", colorScale(records[id]));
     });
-};
+}
 
 const clearPlot = () => {
     d3.selectAll("path.county").each(function () {
@@ -127,15 +142,37 @@ const clearPlot = () => {
     });
 };
 
+const getSelectedIndustryIds = () => {
+    const checkbox_list = document.querySelectorAll("input[type='checkbox']");
+    const results = [];
+    checkbox_list.forEach((cb) => {
+        if (cb.checked) results.push(cb.getAttribute("code"));
+    });
+
+    return results;
+};
+
+const getSelectedCountyIds = () => {
+    const svg = document.querySelector("svg");
+    return Array.from(svg.querySelectorAll("path.county[selected='true']")).map((ele) =>
+        ele.getAttribute("county-id")
+    );
+};
+
 function handleRegionClick() {
-    target = d3.select(this);
-    if (target.attr("selected") == "false") {
-        target.style("fill", COLOR_SELECTED);
-        target.attr("selected", "true");
-    } else {
-        target.style("fill", null);
-        target.attr("selected", "false");
-    }
+    const county_id = d3.select(this).attr("county-id");
+
+    d3.selectAll(`path[county-id="${county_id}"]`).each(function () {
+        target = d3.select(this);
+
+        if (target.attr("selected") == "false") {
+            target.style("fill", COLOR_SELECTED);
+            target.attr("selected", "true");
+        } else {
+            target.style("fill", null);
+            target.attr("selected", "false");
+        }
+    });
 }
 
 const addToolTip = (target, data_dict) => {
@@ -154,7 +191,7 @@ const addToolTip = (target, data_dict) => {
 };
 
 function removeToolTip() {
-    this.removeEventListener()
+    this.removeEventListener();
 }
 
 // SVG.call(
