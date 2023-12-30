@@ -134,7 +134,42 @@ function refreshPlot() {
 
         target.style("fill", colorScale(records[id]));
     });
+
+    addLegend(svg, 0, max_val, colorScale);
 }
+
+const addLegend = (svg, min_val, max_val, colorScale) => {
+    const width = svg.attr("width");
+    const margin = 50;
+    const rect_h = 20;
+
+    const scale = d3
+        .scaleLinear()
+        .range([margin, width - margin])
+        .domain([min_val, max_val]);
+
+    const axis = d3
+        .axisBottom()
+        .scale(scale)
+        .tickSize(rect_h + 5)
+        .tickValues([min_val, (min_val + max_val) / 2, max_val]);
+
+    const g = svg.append("g").attr("class", "legend").attr("transform", `translate(0,${50})`);
+
+    const step = (max_val - min_val) / 100;
+    const linspace = d3.range(min_val, max_val, step);
+    const w = width / linspace.length;
+    linspace.forEach((d) => {
+        g.append("rect")
+            .style("fill", colorScale(d))
+            .style("stroke-width", 0)
+            .attr("width", w)
+            .attr("height", rect_h)
+            .attr("x", scale(d));
+    });
+
+    g.call(axis);
+};
 
 const clearPlot = () => {
     d3.selectAll("path.county").each(function () {
