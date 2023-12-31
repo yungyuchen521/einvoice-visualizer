@@ -41,3 +41,28 @@ const COUNTY_DICT = {
     X: "Penghu",
     Z: "Mazu",
 };
+
+const TOPO_COUNTY_TABLE = [
+    "",
+    "G",
+    "N",
+    "M",
+    "P",
+    "C",
+    "A",
+    "F",
+    "B",
+    "D",
+    "H",
+    "K",
+    "I",
+    "Q",
+    "W",
+    "E",
+    "V",
+    "U",
+    "X",
+    "O",
+    "J",
+    "T",
+];

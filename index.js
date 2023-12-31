@@ -1,29 +1,3 @@
-const COUNTY_ID_TABLE = [
-    "",
-    "G", // 宜蘭
-    "N", // 彰化
-    "M", // 南投
-    "P", // 雲林
-    "C", // 基隆
-    "A", // 台北
-    "F", // 新北
-    "B", // 台中
-    "D", // 台南
-    "H", // 桃園
-    "K", // 苗栗
-    "I", // 嘉義市
-    "Q", // 嘉義縣
-    "W", // 金門
-    "E", // 高雄
-    "V", // 台東
-    "U", // 花蓮
-    "X", // 澎湖
-    "O", // 新竹市
-    "J", // 新竹縣
-    "T", // 屏東
-    // Z: 連江
-];
-
 const CENTER_LONG = 123;
 const CENTER_LAT = 24;
 const MAP_SCALE = 8000;
@@ -73,7 +47,7 @@ function drawMap() {
         .attr("d", pathGenerator)
         .attr("class", "county")
         .attr("selected", false)
-        .attr("county-id", (_, i) => COUNTY_ID_TABLE[i])
+        .attr("county-id", (_, i) => TOPO_COUNTY_TABLE[i])
         .on("click", handleRegionClick);
 
     g.select("path[county-id='W']").attr("transform", "translate(120)");
