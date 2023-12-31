@@ -32,36 +32,41 @@
         </nav>
 
         <div class="row" id="toolbox-container">
-            <div class="col-sm-3">
+            <div class="perspective col-sm-3">
+                <h3>Perspective</h3>
                 <div>
-                    <label for="perspective">Perspective</label>
-                    <select name="perspective" id="perspective">
-                        <option value="business">Business</option>
-                        <option value="consumption">Consumption</option>
-                    </select>
+                    <input type="radio" name="perspective" value="business" id="business" checked />
+                    <label for="business">Business</label>
+
+                    <input type="radio" name="perspective" value="consumption" id="consumption" />
+                    <label for="consumption">Consumption</label>
                 </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="criterion col-sm-3">
+                <h3>Criterion</h3>
                 <div>
-                    <label for="criterion">Criterion</label>
-                    <select name="criterion" id="criterion">
-                        <option value="amount">Amount</option>
-                        <option value="count">Count</option>
-                        <option value="average">Average</option>
-                    </select>
+                    <input type="radio" name="criterion" value="amount" id="amount" checked />
+                    <label for="amount">Amount</label>
+
+                    <input type="radio" name="criterion" value="count" id="count" />
+                    <label for="count">Count</label>
+
+                    <input type="radio" name="criterion" value="average" id="average" />
+                    <label for="average">Average</label>
                 </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="year col-sm-3">
+                <h3>Year</h3>
                 <div>
-                    <label for="start-year">Year</label>
                     <input id="start-year" type="number" min="2020" max="2023" value="2020" />~
                     <input id="end-year" type="number" min="2020" max="2023" value="2023" />
                 </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="industry col-sm-3">
+                <h3>Industries</h3>
                 <div>
                     <input type="checkbox" name="retail" id="retail" code="47" checked />
                     <label for="retail">Retail</label>

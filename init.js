@@ -5,6 +5,7 @@ const initNavItems = () => {
     items.forEach((it) => {
         const a = document.createElement("a");
         a.setAttribute("class", "nav-link");
+        a.setAttribute("selected", "false");
         a.innerText = `by ${it}`;
         a.addEventListener("click", updateCompareBy);
         a.setAttribute("val", it);
@@ -39,14 +40,29 @@ function updateCompareBy() {
             titles = ["retail", "hotel", "catering"];
             break;
     }
-
-    d3.selectAll("a.nav-link").each(function () {
-        const a = d3.select(this);
-        a.attr("selected", a.attr("val") == COMPARE_BY ? "true" : "false");
-    });
+    d3.selectAll("a.nav-link").each(toggleNav);
 
     initSvg(values, titles);
-    d3.selectAll("svg").each(initPlot);
+    d3.selectAll("svg").each(drawMap);
+}
+
+function toggleNav() {
+    const nav = d3.select(this);
+    const selected = nav.attr("selected");
+    const val = nav.attr("val");
+
+    const attr = "disabled";
+    if (selected == "false" && val == COMPARE_BY) {
+        nav.attr("selected", "true");
+        document.querySelectorAll(`div.${val} input`).forEach((input) => {
+            input.setAttribute("disabled", "");
+        });
+    } else if (selected == "true" && val != COMPARE_BY) {
+        nav.attr("selected", "false");
+        document.querySelectorAll(`div.${val} input`).forEach((input) => {
+            input.removeAttribute(attr);
+        });
+    }
 }
 
 const initSvg = (values, titles) => {

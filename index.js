@@ -33,7 +33,7 @@ const CACHE = {};
 d3.json(TW_MAP_URL)
     .then((data) => {
         CACHE[CACHE_KEY_TOPO] = data;
-        d3.selectAll("svg").each(initPlot);
+        d3.selectAll("svg").each(drawMap);
     })
     .then(() => {
         d3.csv(DATA_URL).then((data) => {
@@ -57,7 +57,7 @@ d3.json(TW_MAP_URL)
         });
     });
 
-function initPlot() {
+function drawMap() {
     const data = CACHE[CACHE_KEY_TOPO];
     const projectmethod = d3.geoMercator().center([CENTER_LONG, CENTER_LAT]).scale(MAP_SCALE);
     const pathGenerator = d3.geoPath().projection(projectmethod);
@@ -119,12 +119,14 @@ const getData = (svg) => {
     svg.select("g.legend").remove();
 
     const val = svg.attr("val");
-    const start_year = COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
-    const end_year = COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("end-year").value;
-    const crit = COMPARE_BY == COMPARE_BY_CRIT ? val : document.getElementById("criterion").value;
+    const start_year =
+        COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
+    const end_year =
+        COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("end-year").value;
+    const crit = COMPARE_BY == COMPARE_BY_CRIT ? val : getCheckedRadio("criterion");
     const selected_industry_ids = COMPARE_BY == COMPARE_BY_IND ? [val] : getSelectedIndustryIds();
 
-    const perspective = document.getElementById("perspective").value;
+    const perspective = getCheckedRadio("perspective");
     const selected_cnty_ids = getSelectedCountyIds(svg);
 
     let records = null;
@@ -147,6 +149,28 @@ const getData = (svg) => {
     });
 
     return [records, max_val];
+};
+
+const getCheckedRadio = (name) => {
+    return document.querySelector(`input[type='radio'][name='${name}']:checked`).value;
+};
+
+const getSelectedIndustryIds = () => {
+    const checkbox_list = document.querySelectorAll("input[type='checkbox']");
+    const results = [];
+    checkbox_list.forEach((cb) => {
+        if (cb.checked) results.push(cb.getAttribute("code"));
+    });
+
+    return results;
+};
+
+const getSelectedCountyIds = (svg) => {
+    results = [];
+    svg.selectAll("path.county[selected='true']").each(function () {
+        results.push(d3.select(this).attr("county-id"));
+    });
+    return results;
 };
 
 const addLegend = (svg, min_val, max_val, colorScale) => {
@@ -186,24 +210,6 @@ const clearPlot = () => {
     d3.selectAll("path.county").each(function () {
         d3.select(this).attr("selected", "false").style("fill", null);
     });
-};
-
-const getSelectedIndustryIds = () => {
-    const checkbox_list = document.querySelectorAll("input[type='checkbox']");
-    const results = [];
-    checkbox_list.forEach((cb) => {
-        if (cb.checked) results.push(cb.getAttribute("code"));
-    });
-
-    return results;
-};
-
-const getSelectedCountyIds = (svg) => {
-    results = [];
-    svg.selectAll("path.county[selected='true']").each(function () {
-        results.push(d3.select(this).attr("county-id"));
-    });
-    return results;
 };
 
 function handleRegionClick() {
