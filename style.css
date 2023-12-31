@@ -29,9 +29,24 @@ h1.svg-title {
 }
 
 .county:hover {
-    fill: lightgray;
+    opacity: 0.8;
 }
 
 .legend text {
     font-size: 1.5em;
+}
+
+.tooltip-container {
+    position: absolute;
+
+    z-index: 100;
+    opacity: 0;
+
+    background-color: white;
+    color: black;
+
+    font-size: 1.5em;
+    padding: 15px;
+
+    border-radius: 1em;
 }

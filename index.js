@@ -94,6 +94,7 @@ const refresh = () => {
     svg_list.forEach((svg, i) => {
         svg = d3.select(svg);
         svg.select("g.legend").remove();
+        const selected_cnty_ids = getSelectedCountyIds(svg);
 
         const max_val = COMPARE_BY == COMPARE_BY_CRIT ? max_val_list[i] : d3.max(max_val_list);
         const colorScale = d3
@@ -104,10 +105,12 @@ const refresh = () => {
         svg.selectAll("path.county").each(function () {
             const target = d3.select(this);
             const id = target.attr("county-id");
-            const selected_cnty_ids = getSelectedCountyIds(svg);
-            if (selected_cnty_ids.includes(id)) return;
 
-            target.style("fill", colorScale(data_list[i][id]));
+            if (selected_cnty_ids.includes(id)) removeToolTip(this);
+            else {
+                target.style("fill", colorScale(data_list[i][id]));
+                addToolTip(this, COUNTY_DICT[id], data_list[i][id]);
+            }
         });
 
         if (i == 0 || COMPARE_BY == COMPARE_BY_CRIT) addLegend(svg, 0, max_val, colorScale);
@@ -244,27 +247,21 @@ function handleRegionClick() {
     }
 }
 
-const addToolTip = (target, data_dict) => {
-    const tooltip = d3.select("#tooltip");
-    const cls = target.getAttribute("id");
+const addToolTip = (target, cnty_name, value) => {
+    const tooltip = d3.select("div.tooltip-container");
 
-    target.addEventListener("mousemove", (e) => {
-        tooltip.style("left", e.screenX - 150 + "px").style("top", e.screenY - 250 + "px");
-        tooltip.select("#qtr").html(`${dt.getFullYear()} / ${dt.getMonth() + 1}`);
-        tooltip.select("#sales").html(data_dict[dt][cls]);
+    target.addEventListener("mouseover", (e) => {
+        tooltip.style("opacity", "1");
+        tooltip.style("left", e.screenX - 150 + "px").style("top", e.screenY - 150 + "px");
+
+        tooltip.select("#county").html(cnty_name);
+        tooltip.select("#value").html(Math.round(value));
     });
-
-    target.addEventListener("mouseover", () => tooltip.style("opacity", "1"));
-
     target.addEventListener("mouseout", () => tooltip.style("opacity", "0"));
 };
 
-function removeToolTip() {
-    this.removeEventListener();
+const removeToolTip = (target) => {
+    const copy = target.cloneNode(true)
+    target.replaceWith(copy);
+    copy.addEventListener("click", handleRegionClick)
 }
-
-// SVG.call(
-//     d3.zoom().on("zoom", () => {
-//         g.attr("transform", d3.event.transform);
-//     })
-// );
