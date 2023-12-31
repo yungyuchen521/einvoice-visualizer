@@ -23,6 +23,8 @@ function updateCompareBy() {
 
     switch (COMPARE_BY) {
         case COMPARE_BY_COUNTY:
+            values = ["", "", ""];
+            titles = values;
             break;
         case COMPARE_BY_CRIT:
             values = ["amount", "count", "average"];
@@ -38,18 +40,16 @@ function updateCompareBy() {
             break;
     }
 
-    console.log(COMPARE_BY);
-
     d3.selectAll("a.nav-link").each(function () {
         const a = d3.select(this);
         a.attr("selected", a.attr("val") == COMPARE_BY ? "true" : "false");
     });
 
-    initSvg(COMPARE_BY, values, titles);
+    initSvg(values, titles);
     d3.selectAll("svg").each(initPlot);
 }
 
-const initSvg = (key, values, titles) => {
+const initSvg = (values, titles) => {
     if (!titles) titles = values;
 
     const container = document.getElementById("svg-container");
@@ -60,7 +60,6 @@ const initSvg = (key, values, titles) => {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("width", 440);
         svg.setAttribute("height", 650);
-        svg.setAttribute("key", key);
         svg.setAttribute("val", values[i]);
 
         const title = document.createElement("h1");

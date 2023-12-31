@@ -30,8 +30,6 @@ const MAP_SCALE = 8000;
 
 const CACHE = {};
 
-let COMPARE_BY = COMPARE_BY_IND;
-
 d3.json(TW_MAP_URL)
     .then((data) => {
         CACHE[CACHE_KEY_TOPO] = data;
@@ -90,15 +88,14 @@ const refresh = () => {
     svg_list.forEach((svg) => {
         const [data, max_value] = getData(svg);
         data_list.push(data);
-        max_val_list.push(max_value)
+        max_val_list.push(max_value);
     });
 
-    const selected_cnty_ids = getSelectedCountyIds();
     svg_list.forEach((svg, i) => {
         svg = d3.select(svg);
         svg.select("g.legend").remove();
 
-        const max_val = COMPARE_BY == COMPARE_BY_CRIT ? max_val_list[i] : d3.max(max_val_list)
+        const max_val = COMPARE_BY == COMPARE_BY_CRIT ? max_val_list[i] : d3.max(max_val_list);
         const colorScale = d3
             .scaleSequential()
             .domain([-max_val * 0.2, max_val])
@@ -107,6 +104,7 @@ const refresh = () => {
         svg.selectAll("path.county").each(function () {
             const target = d3.select(this);
             const id = target.attr("county-id");
+            const selected_cnty_ids = getSelectedCountyIds(svg);
             if (selected_cnty_ids.includes(id)) return;
 
             target.style("fill", colorScale(data_list[i][id]));
@@ -120,16 +118,14 @@ const getData = (svg) => {
     svg = d3.select(svg);
     svg.select("g.legend").remove();
 
-    const key = svg.attr("key");
     const val = svg.attr("val");
-
-    const start_year = key == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
-    const end_year = key == COMPARE_BY_YEAR ? +val : +document.getElementById("end-year").value;
-    const crit = key == COMPARE_BY_CRIT ? val : document.getElementById("criterion").value;
-    const selected_industry_ids = key == COMPARE_BY_IND ? [val] : getSelectedIndustryIds();
+    const start_year = COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
+    const end_year = COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("end-year").value;
+    const crit = COMPARE_BY == COMPARE_BY_CRIT ? val : document.getElementById("criterion").value;
+    const selected_industry_ids = COMPARE_BY == COMPARE_BY_IND ? [val] : getSelectedIndustryIds();
 
     const perspective = document.getElementById("perspective").value;
-    const selected_cnty_ids = getSelectedCountyIds();
+    const selected_cnty_ids = getSelectedCountyIds(svg);
 
     let records = null;
     selected_cnty_ids.forEach((id) => {
@@ -202,18 +198,19 @@ const getSelectedIndustryIds = () => {
     return results;
 };
 
-const getSelectedCountyIds = () => {
-    const svg = document.querySelector("svg");
-    return Array.from(svg.querySelectorAll("path.county[selected='true']")).map((ele) =>
-        ele.getAttribute("county-id")
-    );
+const getSelectedCountyIds = (svg) => {
+    results = [];
+    svg.selectAll("path.county[selected='true']").each(function () {
+        results.push(d3.select(this).attr("county-id"));
+    });
+    return results;
 };
 
 function handleRegionClick() {
-    const county_id = d3.select(this).attr("county-id");
+    const cnty_id = d3.select(this).attr("county-id");
 
-    d3.selectAll(`path[county-id="${county_id}"]`).each(function () {
-        target = d3.select(this);
+    function toggle(target) {
+        if (!target) target = d3.select(this);
 
         if (target.attr("selected") == "false") {
             target.style("fill", COLOR_SELECTED);
@@ -222,7 +219,23 @@ function handleRegionClick() {
             target.style("fill", null);
             target.attr("selected", "false");
         }
-    });
+    }
+
+    if (COMPARE_BY == COMPARE_BY_COUNTY) {
+        toggle(d3.select(this));
+        const cnty_name = COUNTY_DICT[cnty_id];
+        const h1 = this.closest("div").querySelector("h1");
+        let titles = h1.innerText.split(", ");
+
+        if (titles[0] == "") titles = [cnty_name];
+        else if (titles.includes(cnty_name)) titles = titles.filter((t) => t != cnty_name);
+        else titles.push(cnty_name);
+        h1.innerText = titles.join(", ");
+    } else {
+        d3.selectAll(`path[county-id="${cnty_id}"]`).each(function () {
+            toggle(d3.select(this));
+        });
+    }
 }
 
 const addToolTip = (target, data_dict) => {

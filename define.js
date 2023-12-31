@@ -16,3 +16,28 @@ const TW_MAP_URL = `${REPO_URL}/tw_topo.json`;
 const DATA_URL = `${REPO_URL}/data.csv`;
 
 const COLOR_SELECTED = "black";
+
+const COUNTY_DICT = {
+    C: "Keelung",
+    A: "Taipei",
+    F: "New Taipei",
+    H: "Taoyuan",
+    O: "Hisnchu City",
+    J: "Hsinchu County",
+    K: "Miaoli",
+    B: "Taichung",
+    M: "Nantou",
+    N: "Changhua",
+    P: "Yunlin",
+    I: "Chiayi City",
+    Q: "Chiayi County",
+    D: "Tainan",
+    E: "Kaohsiung",
+    T: "Pingtung",
+    V: "Taitung",
+    U: "Hualien",
+    G: "Yilan",
+    W: "Kinmen",
+    X: "Penghu",
+    Z: "Mazu",
+};
