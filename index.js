@@ -100,7 +100,7 @@ const getData = (svg) => {
         COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
     const end_year =
         COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("end-year").value;
-    const crit = COMPARE_BY == COMPARE_BY_CRIT ? val : getCheckedRadio("criterion");
+    const crit = COMPARE_BY == COMPARE_BY_CRIT ? val : getCheckedRadio(COMPARE_BY_CRIT);
     const selected_industry_ids = COMPARE_BY == COMPARE_BY_IND ? [val] : getSelectedIndustryIds();
 
     const perspective = getCheckedRadio("perspective");
@@ -226,7 +226,7 @@ const addToolTip = (target, cnty_name, value) => {
 
     target.addEventListener("mouseover", (e) => {
         tooltip.style("opacity", "1");
-        tooltip.style("left", e.screenX - 150 + "px").style("top", e.screenY - 150 + "px");
+        tooltip.style("left", e.screenX + 100 + "px").style("top", e.screenY + "px");
 
         tooltip.select("#county").html(cnty_name);
         tooltip.select("#value").html(Math.round(value));

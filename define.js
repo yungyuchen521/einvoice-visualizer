@@ -7,7 +7,7 @@ const CACHE_KEY_BUSINESS = "business";
 const CACHE_KEY_CONSUMPTION = "consumption";
 
 const COMPARE_BY_COUNTY = "county";
-const COMPARE_BY_CRIT = "criterion";
+const COMPARE_BY_CRIT = "criteria";
 const COMPARE_BY_YEAR = "year";
 const COMPARE_BY_IND = "industry";
 
