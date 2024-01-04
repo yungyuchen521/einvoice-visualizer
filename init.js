@@ -6,7 +6,7 @@ const initNavItems = () => {
         const a = document.createElement("a");
         a.setAttribute("class", "nav-link");
         a.setAttribute("selected", "false");
-        a.innerText = `by ${it}`;
+        a.innerText = it.toUpperCase();
         a.addEventListener("click", updateCompareBy);
         a.setAttribute("val", it);
 
@@ -19,6 +19,8 @@ const initNavItems = () => {
 };
 
 function updateCompareBy() {
+    d3.select("div.hint").style("display", "none");
+
     COMPARE_BY = this.getAttribute("val");
     let values, titles;
 

@@ -2,9 +2,17 @@ body {
     background: lightblue;
 }
 
+a.nav-link {
+    font-size: 1.5em;
+}
+
 li.nav-item:has(a.nav-link[selected='true']) {
     background-color: black;
     color: white;
+}
+
+div.hint h1 {
+    text-align: center;
 }
 
 #toolbox-container {
