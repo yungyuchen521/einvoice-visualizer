@@ -3,10 +3,10 @@ body {
 }
 
 a.nav-link {
-    font-size: 1.5em;
+    font-size: 1.8em;
 }
 
-li.nav-item:has(a.nav-link[selected='true']) {
+li.nav-item:has(a.nav-link[selected='true']), li.nav-item:hover {
     background-color: black;
     color: white;
 }
@@ -17,13 +17,13 @@ div.hint h1 {
 
 #toolbox-container {
     margin: 30px;
-    font-size: 1.2em;
+    font-size: 1.8em;
 }
 
 #btn-container {
     margin-top: 50px;
     margin-bottom: 10px;
-    font-size: 1.5em;
+    font-size: 2em;
 }
 
 h1.svg-title {
