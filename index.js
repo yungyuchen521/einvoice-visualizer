@@ -39,7 +39,9 @@ function drawMap() {
 
     const svg = d3.select(this);
     svg.html("");
-    const g = svg.append("g").attr("transform", "translate(100, 50)");
+    const x_offset = document.querySelectorAll("svg").length <= 2 ? 200 : 100;
+
+    const g = svg.append("g").attr("transform", `translate(${x_offset}, 50)`);
     g.selectAll("path")
         .data(geometries.features)
         .enter()
@@ -96,6 +98,7 @@ const getData = (svg) => {
     svg.select("g.legend").remove();
 
     const val = svg.attr("val");
+    const perspective = COMPARE_BY == COMPARE_BY_PERSPECTIVE ? val : getCheckedRadio("perspective");
     const start_year =
         COMPARE_BY == COMPARE_BY_YEAR ? +val : +document.getElementById("start-year").value;
     const end_year =
@@ -103,7 +106,6 @@ const getData = (svg) => {
     const crit = COMPARE_BY == COMPARE_BY_CRIT ? val : getCheckedRadio(COMPARE_BY_CRIT);
     const selected_industry_ids = COMPARE_BY == COMPARE_BY_IND ? [val] : getSelectedIndustryIds();
 
-    const perspective = getCheckedRadio("perspective");
     const selected_cnty_ids = getSelectedCountyIds(svg);
 
     let records = null;
@@ -226,7 +228,7 @@ const addToolTip = (target, cnty_name, value) => {
 
     target.addEventListener("mouseover", (e) => {
         tooltip.style("opacity", "1");
-        tooltip.style("left", e.screenX + 100 + "px").style("top", e.screenY + "px");
+        tooltip.style("left", e.screenX + 100 + "px").style("top", e.screenY - 100 + "px");
 
         tooltip.select("#county").html(cnty_name);
         tooltip.select("#value").html(Math.round(value));
@@ -235,7 +237,7 @@ const addToolTip = (target, cnty_name, value) => {
 };
 
 const removeToolTip = (target) => {
-    const copy = target.cloneNode(true)
+    const copy = target.cloneNode(true);
     target.replaceWith(copy);
-    copy.addEventListener("click", handleRegionClick)
-}
+    copy.addEventListener("click", handleRegionClick);
+};

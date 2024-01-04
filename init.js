@@ -1,5 +1,11 @@
 const initNavItems = () => {
-    const items = [COMPARE_BY_COUNTY, COMPARE_BY_CRIT, COMPARE_BY_YEAR, COMPARE_BY_IND];
+    const items = [
+        COMPARE_BY_PERSPECTIVE,
+        COMPARE_BY_COUNTY,
+        COMPARE_BY_CRIT,
+        COMPARE_BY_YEAR,
+        COMPARE_BY_IND,
+    ];
 
     const parent = document.querySelector("#navbarSupportedContent ul");
     items.forEach((it) => {
@@ -25,6 +31,10 @@ function updateCompareBy() {
     let values, titles;
 
     switch (COMPARE_BY) {
+        case COMPARE_BY_PERSPECTIVE:
+            values = ["business", "consumption"];
+            titles = values;
+            break;
         case COMPARE_BY_COUNTY:
             values = ["", "", ""];
             titles = values;
@@ -76,7 +86,8 @@ const initSvg = (values, titles) => {
 
     titles.forEach((t, i) => {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("width", 440);
+        const width = values.length <= 2 ? 600 : 440;
+        svg.setAttribute("width", width);
         svg.setAttribute("height", 650);
         svg.setAttribute("val", values[i]);
 

@@ -6,6 +6,7 @@ const CACHE_KEY_TOPO = "topo";
 const CACHE_KEY_BUSINESS = "business";
 const CACHE_KEY_CONSUMPTION = "consumption";
 
+const COMPARE_BY_PERSPECTIVE = "perspective"
 const COMPARE_BY_COUNTY = "county";
 const COMPARE_BY_CRIT = "criteria";
 const COMPARE_BY_YEAR = "year";
