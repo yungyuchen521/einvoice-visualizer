@@ -75,7 +75,7 @@ const refresh = () => {
         const max_val = COMPARE_BY == COMPARE_BY_CRIT ? max_val_list[i] : d3.max(max_val_list);
         const colorScale = d3
             .scaleSequential()
-            .domain([-max_val * 0.2, max_val])
+            .domain([0, max_val])
             .interpolator(d3.interpolateReds);
 
         svg.selectAll("path.county").each(function () {
