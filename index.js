@@ -57,13 +57,15 @@ function drawMap() {
 
 const refresh = () => {
     const data_list = [];
+    const min_val_list = [];
     const max_val_list = [];
 
     const svg_list = document.querySelectorAll("svg");
 
     svg_list.forEach((svg) => {
-        const [data, max_value] = getData(svg);
+        const [data, min_val, max_value] = getData(svg);
         data_list.push(data);
+        min_val_list.push(min_val)
         max_val_list.push(max_value);
     });
 
@@ -72,10 +74,9 @@ const refresh = () => {
         svg.select("g.legend").remove();
         const selected_cnty_ids = getSelectedCountyIds(svg);
 
-        const max_val = COMPARE_BY == COMPARE_BY_CRIT ? max_val_list[i] : d3.max(max_val_list);
         const colorScale = d3
             .scaleSequential()
-            .domain([0, max_val])
+            .domain([min_val_list[i], max_val_list[i]])
             .interpolator(d3.interpolateReds);
 
         svg.selectAll("path.county").each(function () {
@@ -89,7 +90,7 @@ const refresh = () => {
             }
         });
 
-        if (i == 0 || COMPARE_BY == COMPARE_BY_CRIT) addLegend(svg, 0, max_val, colorScale);
+        addLegend(svg, min_val_list[i], max_val_list[i], colorScale);
     });
 };
 
@@ -121,13 +122,15 @@ const getData = (svg) => {
         else Object.keys(tmp).forEach((k) => (records[k] += tmp[k]));
     });
 
+    let min_val = 1e15;
     let max_val = 0;
     Object.keys(records).forEach((id) => {
         if (selected_cnty_ids.includes(id)) return;
+        min_val = Math.min(min_val, records[id]);
         max_val = Math.max(max_val, records[id]);
     });
 
-    return [records, max_val];
+    return [records, min_val, max_val];
 };
 
 const getCheckedRadio = (name) => {
