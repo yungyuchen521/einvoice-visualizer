@@ -65,7 +65,7 @@ const refresh = () => {
     svg_list.forEach((svg) => {
         const [data, min_val, max_value] = getData(svg);
         data_list.push(data);
-        min_val_list.push(min_val)
+        min_val_list.push(min_val);
         max_val_list.push(max_value);
     });
 
@@ -192,6 +192,15 @@ const clearPlot = () => {
     d3.selectAll("path.county").each(function () {
         d3.select(this).attr("selected", "false").style("fill", null);
     });
+
+    d3.selectAll("g.legend").each(function() {
+        d3.select(this).remove()
+    })
+
+    if (COMPARE_BY == COMPARE_BY_COUNTY)
+        d3.selectAll(".svg-title").each(function () {
+            d3.select(this).html("");
+        });
 };
 
 function handleRegionClick() {
